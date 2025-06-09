@@ -2,22 +2,86 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>はるとの自己紹介</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>緊急位置ログ</title>
+  <style>
+    body {
+      background-color: #fefefe;
+      font-family: 'Segoe UI', sans-serif;
+      color: #333;
+      padding: 2em;
+      text-align: center;
+    }
+    h1 {
+      color: #b30000;
+      margin-bottom: 1em;
+    }
+    .log {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+      border-top: 1px solid #ccc;
+      padding-top: 1em;
+    }
+    .entry {
+      margin: 1em 0;
+      padding: 0.8em;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background-color: #fafafa;
+    }
+    .entry a {
+      color: #0073e6;
+      text-decoration: none;
+    }
+    .entry a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <img src="img/IMG_4121.jpg" alt="プロフィール画像" class="profile-img">
-    <h1>はるとの自己紹介</h1>
-    <p>大学生で、サイバーセキュリティやWeb制作に興味があります。</p>
-    <ul>
-        <a href="https://github.com/haruto-example" class="button" target="_blank">
-            GitHubを見る
-          </a>
-      <li>趣味：読書、プログラミング、カフェ巡り</li>
-      <li>好きな言語：HTML / CSS / SQL</li>
-    </ul>
-  </div>
+
+  <h1>🆘 緊急位置ログ</h1>
+  <p id="status">現在地を取得しています...</p>
+  <div class="log" id="log"></div>
+
+  <script>
+    function getTimeStamp() {
+      const now = new Date();
+      return now.toLocaleString(); // 時刻を日本語で表示
+    }
+
+    function addLogEntry(lat, lon, time) {
+      const log = document.getElementById("log");
+      const entry = document.createElement("div");
+      entry.className = "entry";
+      entry.innerHTML = `
+        <strong>時刻:</strong> ${time}<br>
+        <strong>緯度:</strong> ${lat}<br>
+        <strong>経度:</strong> ${lon}<br>
+        <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">📍 マップで見る</a>
+      `;
+      log.prepend(entry); // 上に追加（新しい順）
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          const time = getTimeStamp();
+          document.getElementById("status").textContent = "位置情報を記録しました。";
+          addLogEntry(lat, lon, time);
+        },
+        function(error) {
+          document.getElementById("status").textContent = "位置情報の取得に失敗しました。";
+        }
+      );
+    } else {
+      document.getElementById("status").textContent = "この端末は位置情報に対応していません。";
+    }
+  </script>
+
 </body>
 </html>
 

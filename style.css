@@ -1,43 +1,104 @@
-body {
-    background: #f5f5f5;
-    font-family: 'Arial', sans-serif;
-    padding: 40px;
-    color: #333;
-  }
-  
-  .container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  .profile-img {
-    display: block;
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  }
-  .button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #0077cc;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    text-align: center;
-  }
-  
-  .button:hover {
-    background-color: #005fa3;
-  }
-  h1 {
-    color: #0077cc;
-  }
-  
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>緊急位置ログ</title>
+  <style>
+    body {
+      background-color: #fff4f8;
+      font-family: 'Hiragino Maru Gothic ProN', 'UD デジタル 教科書体 N-B', sans-serif;
+      color: #444;
+      padding: 2em;
+      text-align: center;
+    }
+
+    h1 {
+      color: #e75480;
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+
+    #status {
+      font-size: 1.2em;
+      margin-bottom: 2em;
+    }
+
+    .log {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+      border-top: 2px dotted #ffb6c1;
+      padding-top: 1em;
+    }
+
+    .entry {
+      background: #fff;
+      border: 2px solid #ffe0eb;
+      border-radius: 12px;
+      box-shadow: 2px 2px 6px rgba(255, 192, 203, 0.2);
+      margin: 1em 0;
+      padding: 1em;
+      transition: transform 0.2s;
+    }
+
+    .entry:hover {
+      transform: scale(1.02);
+    }
+
+    .entry a {
+      color: #ff69b4;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .entry a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📍 みまもり位置ログ</h1>
+  <p id="status">現在地を取得しています...</p>
+  <div class="log" id="log"></div>
+
+  <script>
+    function getTimeStamp() {
+      const now = new Date();
+      return now.toLocaleString(); // ex: 2025/06/09 18:23:10
+    }
+
+    function addLogEntry(lat, lon, time) {
+      const log = document.getElementById("log");
+      const entry = document.createElement("div");
+      entry.className = "entry";
+      entry.innerHTML = `
+        <strong>🕒 記録時刻:</strong> ${time}<br>
+        <strong>📌 緯度:</strong> ${lat}<br>
+        <strong>📌 経度:</strong> ${lon}<br>
+        <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">🌍 地図で見る</a>
+      `;
+      log.prepend(entry);
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          const time = getTimeStamp();
+          document.getElementById("status").textContent = "🌸 位置情報を記録しました。";
+          addLogEntry(lat, lon, time);
+        },
+        function(error) {
+          document.getElementById("status").textContent = "⚠️ 位置情報の取得に失敗しました。";
+        }
+      );
+    } else {
+      document.getElementById("status").textContent = "⚠️ この端末では位置情報が使用できません。";
+    }
+  </script>
+
+</body>
+</html>
